@@ -1,0 +1,34 @@
+SQL Actualizar saldo anterior en Tesoreria
+
+update m_tes_kardex_tesoreria
+set saldoanterior=COALESCE((select sum(k1.ci) from m_tes_kardex_tesoreria k1 
+where k1.m_tes_cuenta_bancariaid=m_tes_kardex_tesoreria.m_tes_cuenta_bancariaid and k1.id<m_tes_kardex_tesoreria.id 
+and k1.fechatransaccion > '2017-07-05' and k1.id > 2505 and k1.m_tes_cuenta_bancariaid = 24),0)-
+COALESCE((select sum(k1.ce) from m_tes_kardex_tesoreria k1 
+where k1.m_tes_cuenta_bancariaid=m_tes_kardex_tesoreria.m_tes_cuenta_bancariaid and k1.id<m_tes_kardex_tesoreria.id 
+and k1.fechatransaccion > '2017-07-05' and k1.id > 2505 and k1.m_tes_cuenta_bancariaid = 24),0) 
+
+where (m_tes_kardex_tesoreria.fechatransaccion > '2017-07-05' 
+and m_tes_kardex_tesoreria.id > 2505 and m_tes_kardex_tesoreria.m_tes_cuenta_bancariaid = 24)
+
+UPDATE m_tes_kardex_tesoreria SET saldoactual = 
+(saldoanterior+ ci - ce)
+WHERE id = 2505
+and m_tes_cuenta_bancariaid = 24
+
+
+*************
+
+
+UPDATE m_tes_kardex_tesoreria
+   SET saldoanterior=(select sum(k.ci-k.ce) 
+                      from m_tes_kardex_tesoreria k 
+                      where k.m_tes_cuenta_bancariaid=m_tes_kardex_tesoreria.m_tes_cuenta_bancariaid and
+                      k.id<m_tes_kardex_tesoreria.id),
+
+    saldoactual=(select sum(k.ci-k.ce) 
+                      from m_tes_kardex_tesoreria k 
+                      where k.m_tes_cuenta_bancariaid=m_tes_kardex_tesoreria.m_tes_cuenta_bancariaid and
+                      k.id<=m_tes_kardex_tesoreria.id)
+       
+ WHERE (m_tes_cuenta_bancariaid=24 and fechatransaccion > '2017-07-05' and id > 2505)
