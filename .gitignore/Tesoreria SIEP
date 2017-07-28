@@ -21,14 +21,14 @@ and m_tes_cuenta_bancariaid = 24
 
 
 UPDATE m_tes_kardex_tesoreria
-   SET saldoanterior=(select sum(k.ci-k.ce) 
+   SET saldoanterior=coalesce((select sum(k.ci-k.ce) 
                       from m_tes_kardex_tesoreria k 
                       where k.m_tes_cuenta_bancariaid=m_tes_kardex_tesoreria.m_tes_cuenta_bancariaid and
-                      k.id<m_tes_kardex_tesoreria.id),
+                      k.id<m_tes_kardex_tesoreria.id),0),
 
-    saldoactual=(select sum(k.ci-k.ce) 
+    saldoactual=coalesce((select sum(k.ci-k.ce) 
                       from m_tes_kardex_tesoreria k 
                       where k.m_tes_cuenta_bancariaid=m_tes_kardex_tesoreria.m_tes_cuenta_bancariaid and
-                      k.id<=m_tes_kardex_tesoreria.id)
+                      k.id<=m_tes_kardex_tesoreria.id),0)
        
- WHERE (m_tes_cuenta_bancariaid=24 and fechatransaccion > '2017-07-05' and id > 2505)
+ WHERE m_tes_cuenta_bancariaid = 24
